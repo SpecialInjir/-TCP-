@@ -82,6 +82,7 @@ let main argv =
 
             currentState <- processEvents currentState events
             printfn "Текущее состояние: %A" currentState
+            printfn "Для завершения программы введите Close."
 
     printfn "Программа завершена."
     0
