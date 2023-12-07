@@ -56,27 +56,33 @@ let rec processEvents (state: State) (events: Event list) =
 
 [<EntryPoint>]
 let main argv =
-    printfn "Введите события (разделенные пробелом, например: APP_PASSIVE_OPEN APP_SEND RCV_SYN_ACK):"
-    let input = System.Console.ReadLine()
-    let events = input.Split([|' '|], System.StringSplitOptions.RemoveEmptyEntries)
-                    |> Array.map (fun s -> match s with 
-                                          | "APP_PASSIVE_OPEN" -> APP_PASSIVE_OPEN 
-                                          | "APP_ACTIVE_OPEN" -> APP_ACTIVE_OPEN 
-                                          | "APP_SEND" -> APP_SEND 
-                                          | "APP_CLOSE" -> APP_CLOSE 
-                                          | "APP_TIMEOUT" -> APP_TIMEOUT 
-                                          | "RCV_SYN" -> RCV_SYN 
-                                          | "RCV_ACK" -> RCV_ACK 
-                                          | "RCV_SYN_ACK" -> RCV_SYN_ACK 
-                                          | "RCV_FIN" -> RCV_FIN 
-                                          | "RCV_FIN_ACK" -> RCV_FIN_ACK 
-                                          | _ -> failwith "Invalid event")
-                    |> Array.toList
+    let mutable isClosed = false
+    let mutable currentState = CLOSED
 
-    let initialState = CLOSED
-    let finalState = processEvents initialState events
+    while not isClosed do
+        printfn "Введите события (разделенные пробелом, например: APP_PASSIVE_OPEN APP_SEND RCV_SYN_ACK):"
+        let input = System.Console.ReadLine()
+        if input.ToLower() = "close" then
+            isClosed <- true
+        else
+            let events = input.Split([|' '|], System.StringSplitOptions.RemoveEmptyEntries)
+                            |> Array.map (fun s -> match s with 
+                                                | "APP_PASSIVE_OPEN" -> APP_PASSIVE_OPEN 
+                                                | "APP_ACTIVE_OPEN" -> APP_ACTIVE_OPEN 
+                                                | "APP_SEND" -> APP_SEND 
+                                                | "APP_CLOSE" -> APP_CLOSE 
+                                                | "APP_TIMEOUT" -> APP_TIMEOUT 
+                                                | "RCV_SYN" -> RCV_SYN 
+                                                | "RCV_ACK" -> RCV_ACK 
+                                                | "RCV_SYN_ACK" -> RCV_SYN_ACK 
+                                                | "RCV_FIN" -> RCV_FIN 
+                                                | "RCV_FIN_ACK" -> RCV_FIN_ACK 
+                                                | _ -> failwith "Invalid event")
+                            |> Array.toList
 
-    printfn "Финальноее состояние: %A" finalState
+            currentState <- processEvents currentState events
+            printfn "Текущее состояние: %A" currentState
 
+    printfn "Программа завершена."
     0
 
