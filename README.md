@@ -9,3 +9,5 @@
 **Пример использования:**
 
 APP_PASSIVE_OPEN APP_SEND RCV_SYN_ACK + Enter
+
+Закрытие программы по команде Close.
